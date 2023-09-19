@@ -34,3 +34,39 @@ exports.createFile=async (req,res)=>{
     })
   }
 }
+exports.getAllFiles = async (req,res) => {   
+    try {
+      const constructObject = {
+        model : Filter
+      }
+      console.log(req.query,"query")
+      if(req.query.filter) {
+        constructObject["where"] = {
+          tag: [...req.query.filter]
+        }
+      }
+      const files = await File.findAll({include : {...constructObject}})
+      return res.status(200).json({
+        data :  files
+      })
+    }
+    catch(err) {
+        res.status(500).json({
+            err : err.message
+        })
+    }
+}
+
+exports.getAllFilters = async (req,res) => {
+  try {
+    const files = await Filter.findAll();
+    res.status(200).json({
+      data : files
+    })
+  }
+  catch(err) {
+    res.status(500).json({
+      err : err.message
+  })
+  }
+}
