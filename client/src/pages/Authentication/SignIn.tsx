@@ -1,24 +1,29 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import LogoDark from '../../images/logo/logo-dark.svg';
 import Logo from '../../images/logo/logo.svg';
+import { useLoginMutation } from '../../store/services/api';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../../store/slices/userSlice';
+
 
 const SignIn = () => {
+  const [email,setEmail] = useState("")
+  const [password,setPassword] = useState("")
+  const dispatch = useDispatch()
+  const [login,{isLoading}] = useLoginMutation()
+  const submitHandler = (e :React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    login({email : email,password : password}).unwrap().then((resp)=>{
+        dispatch(setUser(resp.user))
+    })
+  }
   return (
     <>
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="flex flex-wrap items-center">
           <div className="hidden w-full xl:block xl:w-1/2">
             <div className="py-17.5 px-26 text-center">
-              <Link className="mb-5.5 inline-block" to="/">
-                <img className="hidden dark:block" src={Logo} alt="Logo" />
-                <img className="dark:hidden" src={LogoDark} alt="Logo" />
-              </Link>
-
-              <p className="2xl:px-20">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
-                suspendisse.
-              </p>
-
               <span className="mt-15 inline-block">
                 <svg
                   width="350"
@@ -151,13 +156,15 @@ const SignIn = () => {
                 Sign In
               </h2>
 
-              <form>
+              <form onSubmit={(e)=>submitHandler(e)}>
                 <div className="mb-4">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Email
                   </label>
                   <div className="relative">
                     <input
+                      value={email}
+                      onChange={(e)=>setEmail(e.target.value)}
                       type="email"
                       placeholder="Enter your email"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
@@ -189,6 +196,8 @@ const SignIn = () => {
                   </label>
                   <div className="relative">
                     <input
+                      value={password}
+                      onChange={(e)=>setPassword(e.target.value)}
                       type="password"
                       placeholder="Please Enter Password Here"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
@@ -220,6 +229,7 @@ const SignIn = () => {
 
                 <div className="mb-5">
                   <input
+                    disabled={isLoading}
                     type="submit"
                     value="Sign In"
                     className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
