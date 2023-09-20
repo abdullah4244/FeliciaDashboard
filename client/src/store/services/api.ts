@@ -6,7 +6,7 @@ import { GetFilesReponse } from '../servicesTypes/fileTypes'
 export const Api = createApi({
   reducerPath: 'Api',
   baseQuery: fetchBaseQuery({ baseUrl: '/api/',credentials : "include"}),
-  tagTypes :["Watch"],
+  tagTypes :["FILES"],
   endpoints: (builder) => ({
     login: builder.mutation<UserApiResponse, {email : string , password : string}>({
       query: (arg) => ({
@@ -32,11 +32,21 @@ export const Api = createApi({
       query : () => ({
        url : "file/",
        method : "GET"
-      })
+      }),
+      providesTags : ['FILES']
+ }),
+ addFile : builder.mutation<void,FormData>({
+  query : (data) => ({
+     url : "file/",
+     method : "POST",
+     body : data,
+     formData : true
+  }),
+  invalidatesTags : ['FILES']
  })
   }),
 })
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useLoginMutation,useGetMeQuery,useLogOutMutation,useGetFilesQuery} = Api
+export const { useLoginMutation,useGetMeQuery,useLogOutMutation,useGetFilesQuery,useAddFileMutation} = Api

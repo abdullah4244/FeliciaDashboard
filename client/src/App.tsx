@@ -11,7 +11,8 @@ import { useAppDispatch } from './store/store';
 import { setUser } from './store/slices/userSlice';
 import AuthRoute from './components/HOC/AuthRoute';
 import ProtectedRoute from './components/HOC/ProtectedRoute';
-
+import {ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const DefaultLayout = lazy(() => import('./layout/DefaultLayout'));
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
     <Loader />
   ) : (
     <>
+     <ToastContainer/>
       <Routes>
         <Route path="auth" element={<AuthRoute />}>
         <Route path="signin" element={<SignIn/>}/>
