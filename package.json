@@ -6,7 +6,7 @@
   "scripts": {
     "start:dev": "npm run client && npm run server",
     "client": "cd client && npm run build",
-    "server": "nodemon server.js",
+    "server": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
