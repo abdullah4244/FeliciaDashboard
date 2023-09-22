@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 import UserOne from '../images/user/user-01.png';
 import { useLogOutMutation } from '../store/services/api';
-import { useAppDispatch } from '../store/store';
+import { useAppDispatch, useAppSelector } from '../store/store';
 import { resetUser } from '../store/slices/userSlice';
 
 const DropdownUser = () => {
@@ -42,7 +42,7 @@ const DropdownUser = () => {
     document.addEventListener('keydown', keyHandler);
     return () => document.removeEventListener('keydown', keyHandler);
   });
-
+  const {name} = useAppSelector((state)=>state.activeUser.user)
   return (
     <div className="relative">
       <Link
@@ -53,9 +53,8 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            Thomas Anree
+            {name}
           </span>
-          <span className="block text-xs">UX Designer</span>
         </span>
 
         <span className="h-12 w-12 rounded-full">

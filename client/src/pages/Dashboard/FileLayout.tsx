@@ -1,21 +1,54 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import Breadcrumb from '../../components/Breadcrumb';
 import { TagsInput } from "react-tag-input-component";
-import { useAddFileMutation } from '../../store/services/api';
+import { useAddFileMutation, useGetAllFiltersQuery } from '../../store/services/api';
 import { toast } from 'react-toastify';
+import { useAppSelector } from '../../store/store';
+import { MultiSelect } from 'react-multi-select-component';
+type Option = {
+  label  :string;
+  value : string;
+}
 const FileLayout = () => {
+  const {role} = useAppSelector((state)=>state.activeUser.user);
+  const {data} =useGetAllFiltersQuery()
+  const [multiSelected,setMultiSelected] = useState<Option[]>([])
   const [selected, setSelected] = useState<string[]>([]);
   const [file, setFile] = useState<File>();
-  const[addFile] = useAddFileMutation();
+  const[addFile,{isLoading}] = useAddFileMutation();
+
+  const uniqueFilters = useMemo(()=>{
+    if(!data?.data) {
+      return []
+    }
+    const uniqueIdentifier : any = {}
+    return data?.data.map((item)=>({label : item.tag , value : item.tag})).filter((item)=>{
+    if(uniqueIdentifier[item.label]) {
+       return false
+    }
+    else {
+      uniqueIdentifier[item.label] = item.value
+      return true;
+    }
+
+    })
+  },[data])
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
         const formData = new FormData()
         if(file) {
          formData.append('file',file)
         }
+        if(role === "admin"){
         selected.forEach((tag)=>{
           formData.append('filters',tag)
         })
+       }
+       else {
+        multiSelected.forEach((item)=>{
+          formData.append('filters',item.value)
+        })
+       }
         addFile(formData).unwrap().then(()=>{
              toast.success("File Successfully Added" ,{
               autoClose : 2000,
@@ -27,6 +60,7 @@ const FileLayout = () => {
         }).finally(()=>{
           setSelected([])
           setFile(undefined)
+          setMultiSelected([])
         })
     }
   return (
@@ -59,7 +93,8 @@ const FileLayout = () => {
                   }}
                />
               </div>
-              <div className='mb-3'>
+
+            { role === "admin" ? <div className='mb-3'>
                 <label className="mb-3 block text-black dark:text-white">
                   Add Filters
                 </label>
@@ -69,11 +104,17 @@ const FileLayout = () => {
                     name="fruits"
                     placeHolder="enter filters"
                   />
-              </div>
+              </div> : 
+              <MultiSelect
+              options={uniqueFilters}
+              value={multiSelected}
+              onChange={setMultiSelected}
+              labelledBy="Select"
+            />}
             </div>
 
-                <button  type='submit' className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray disabled:opacity-50">
-                  Save
+                <button disabled={isLoading} type='submit' className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray disabled:opacity-50">
+                  {isLoading ? "Saving.." : "Save"}
                 </button>
               </div>
             </form>

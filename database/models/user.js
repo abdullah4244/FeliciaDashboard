@@ -22,6 +22,10 @@ const User = sequelize.define('user',{
             }
         }
     },
+    role : {
+      type : Sequelize.STRING,
+      allowNull : false
+    },
     password : {
         type : Sequelize.STRING,
         allowNull : false

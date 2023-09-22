@@ -17,3 +17,6 @@ export type File = {
 export interface GetFilesReponse {
     data : File[]
 }
+export interface GetFiltersResponse {
+  data :Filter[]
+}

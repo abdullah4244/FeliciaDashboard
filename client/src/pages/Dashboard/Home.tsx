@@ -1,8 +1,9 @@
 import PaginatedTable from '../../components/PaginatedTable.js';
 import type { ColumnsType } from 'antd/es/table';
-import { useGetFilesQuery } from '../../store/services/api.js';
+import { useGetAllFiltersQuery, useGetFilesQuery } from '../../store/services/api.js';
 import { File } from '../../store/servicesTypes/fileTypes.js';
 import { useState } from 'react';
+import FiltersDropDown from '../../components/FiltersDropDown.js';
 
 const columnsCreator = () : ColumnsType<File> => [
   {
@@ -19,11 +20,19 @@ const columnsCreator = () : ColumnsType<File> => [
     title: 'Url',
     key: 'url',
     dataIndex: 'url',
+    render:(_,record)=>(
+      <a onClick={(e)=>{
+        e.preventDefault()
+        window.open(record.url)
+      }}>{record.url}</a>
+    )
   },
 ];
 
 const Home = () => {
-  const{data:files={data :[]},isLoading} = useGetFilesQuery()
+  const [filters,setFilters] = useState<string[]>([]);
+  const outputString = filters.map(tag => `filter[]=${tag}`).join('&');
+  const{data:files={data :[]},isLoading} = useGetFilesQuery(outputString)
   const columns = columnsCreator();
   const [limit,setLimit] = useState(10);
   const [currentPage,setCurrentPage] = useState(1);
@@ -34,7 +43,7 @@ const Home = () => {
         <h3 className="font-medium text-black dark:text-white">
                 Files
           </h3>
-           <p>Filter here</p>
+           <FiltersDropDown setFilters={(value)=>setFilters(value)}/>
         </div>
         <div className="col-span-12 xl:col-span-12">
         <PaginatedTable columns={columns} 

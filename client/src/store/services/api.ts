@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { UserApiResponse } from '../servicesTypes/userTypes'
-import { GetFilesReponse } from '../servicesTypes/fileTypes'
+import { GetFilesReponse, GetFiltersResponse } from '../servicesTypes/fileTypes'
 
 // Define a service using a base URL and expected endpoints
 export const Api = createApi({
@@ -28,9 +28,9 @@ export const Api = createApi({
           method : "GET"
          })
     }),
-    getFiles: builder.query<GetFilesReponse,void>({
-      query : () => ({
-       url : "file/",
+    getFiles: builder.query<GetFilesReponse,string>({
+      query : (data) => ({
+       url : `file${data ? '?' : ''}${data}`,
        method : "GET"
       }),
       providesTags : ['FILES']
@@ -43,10 +43,16 @@ export const Api = createApi({
      formData : true
   }),
   invalidatesTags : ['FILES']
+ }),
+ getAllFilters : builder.query<GetFiltersResponse,void>({
+  query : () => ({
+    url : "file/filters"
+  }),
+  providesTags : ['FILES']
  })
   }),
 })
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useLoginMutation,useGetMeQuery,useLogOutMutation,useGetFilesQuery,useAddFileMutation} = Api
+export const { useLoginMutation,useGetMeQuery,useLogOutMutation,useGetFilesQuery,useAddFileMutation,useGetAllFiltersQuery} = Api
